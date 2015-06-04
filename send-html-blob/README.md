@@ -19,3 +19,8 @@ SEND HTML BLOB($send;"";False)
 __解決策__
 
 前述したように，コンテキストモードは，すでに廃されたテクノロジーです。新規DBの開発では，もっと手軽で強力な[自動セッション管理](http://doc.4d.com/4Dv13/4D/13.5/Web-Sessions-Management.300-1457382.ja.html)を使用するようにしてください。（v13以降）
+
+__例題__
+
+* [context-session](https://github.com/4D-JP/context-session)
+* [context-session-2](https://github.com/4D-JP/context-session-2)
