@@ -22,5 +22,4 @@ __解決策__
 
 __例題__
 
-* [context-session](https://github.com/4D-JP/context-session)
-* [context-session-2](https://github.com/4D-JP/context-session-2)
+* [xport-xml-for-excel](https://github.com/4D-JP/export-xml-for-excel)
