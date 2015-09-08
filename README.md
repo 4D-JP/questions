@@ -1,6 +1,6 @@
 # questions
 
-* [文字列のサイズをバイト数で計算することはできないのでしょうか?](https://github.com/4D-JP/questions/tree/master/byte-width)
+* [文字列のサイズをバイト数で計算することはできないのでしょうか。](https://github.com/4D-JP/questions/tree/master/byte-width)
  
 * [v12で作成したWebメソッドがうまく動きません。2004から変換したDBでは問題ないのですが。](https://github.com/4D-JP/questions/tree/master/send-html-blob)
 
