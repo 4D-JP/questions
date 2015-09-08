@@ -72,7 +72,7 @@ http://www.gnu.org/software/src-highlite -->
 
 このメソッドは，指定したエンコーディングに変換できない文字列，および位置とサイズの配列を返します。
 
-変換されたデータベースの場合，文字フィールドのサイズは，バイト数に基づいて定義されたものである場合が少なくありません。フィールドの文字サイズを返すコマンドは，[http://doc.4d.com/4D-13/-/GET-FIELD-PROPERTIES.301-738167.ja.html GET FIELD PROPERTIES]コマンドです。この値と前述したSubstringのバイト版を併用すれば，フィールドの文字列をUnicodeの文字数ではなく，「半角1バイト，全角2バイト」換算で管理することができます。
+変換されたデータベースの場合，文字フィールドのサイズは，バイト数に基づいて定義されたものである場合が少なくありません。フィールドの文字サイズを返すコマンドは，[GET FIELD PROPERTIES](http://doc.4d.com/4Dv15/4D/15/GET-FIELD-PROPERTIES.301-2006631.ja.html)コマンドです。この値と前述したSubstringのバイト版を併用すれば，フィールドの文字列をUnicodeの文字数ではなく，「半角1バイト，全角2バイト」換算で管理することができます。
 
 <!-- Generator: GNU source-highlight 3.1.6
 by Lorenzo Bettini
