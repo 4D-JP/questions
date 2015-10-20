@@ -18,11 +18,11 @@ OB SET($request;"ie";"utf-8")
 OB SET($request;"oe";"utf-8")
 OB SET($params;"request";$request)
 
-ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))
+ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))  //connect
 
-ASSERT(TCP_Get ($params);Attr ($params;"error.message"))
+ASSERT(TCP_Get ($params);Attr ($params;"error.message"))  //send request and receive response
 
-ASSERT(TCP_Disconnect ($params);Attr ($params;"error.message"))
+ASSERT(TCP_Disconnect ($params);Attr ($params;"error.message"))  //disconnect
 ```
 
 
