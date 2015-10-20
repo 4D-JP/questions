@@ -45,6 +45,18 @@ TCP/IPクライアント
 ``TCP_Connect``は，オブジェクト型のパラメーターを受け渡しするラッパーメソッドです。 
 
 ```
+C_OBJECT($params)
+
+OB SET($params;"address";"127.0.0.1")
+OB SET($params;"port";7777)
+OB SET($params;"isSSL";False)
+
+ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))
+```
+
+```
+//TCP_Connect
+
 C_OBJECT($1)
 C_BOOLEAN($0)
 
@@ -71,7 +83,7 @@ $0:=TCP_Result ($1;$error)
 
 v14で新設されたオブジェクト型を使用すれば，数やタイプが特定されない任意の引数をメソッドに渡すことができます。オブジェクト型の引数は，実際には参照型なので，ポインター型を使用しなくても，直接，プロパティに値を代入することができます。
 
-**参考**: [```オブジェクト型を理解する```](http://www.4d.com/jp/blog/c-object.html)
+**参考**: [オブジェクト型を理解する](http://www.4d.com/jp/blog/c-object.html)
 
 ネットワークが利用できない，サーバーが応答しないなど，接続が失敗した場合には，```False```が返されます。その場合，引数の```error.code```プロパティにはエラーコード，```error.message```にはエラーメッセージが代入されています（```TCP_Result```メソッド）。開発中は，[ASSERT](http://doc.4d.com/4Dv15/4D/15/ASSERT.301-2007074.ja.html)でこれを検知することができます。
 
@@ -81,9 +93,88 @@ ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))
 
 ```Attr```は，ドット記法を処理するための簡易的なメソッドです。v15の時点で，オブジェクト型（JSON）のドット記法に対応しているのは，[QUERY BY ATTRIBUTE ](http://doc.4d.com/4Dv15/4D/15/QUERY-BY-ATTRIBUTE.301-2005959.ja.html)だけなので，通常は[OB Get](http://doc.4d.com/4Dv15/4D/15/OB-Get.301-2007253.ja.html)を多重にコールする必要があります。
 
+接続に成功したならば，すぐにデータを送信することができます。クライアントとサーバーの間で交わされるメッセージには，通常，データの終わりを示すための方法がプロトコルで定められているはずです。この例では，単純に```0x00```がデータの終わりであるものとしています。
 
+```
+OB SET($params;"timeout";10)  //seconds
+OB SET($request;"message";"123,abc,456,def"+Char(0))  //custom protocol
+OB SET($request;"ie";"utf-8")
+OB SET($request;"oe";"utf-8")
+OB SET($params;"request";$request)
 
+ASSERT(TCP_Get ($params);Attr ($params;"error.message"))
+```
 
+```
+//TCP_Get
+
+C_OBJECT($1)
+C_BOOLEAN($0)
+
+C_LONGINT($timeout)
+C_TEXT($encoding)
+
+$tcpId:=OB Get($1;"id";Is longint)
+$timeout:=OB Get($1;"timeout";Is longint)*1000
+$request:=OB Get($1;"request";Is object)
+$message:=OB Get($request;"message")
+$encoding:=OB Get($request;"ie";Is text)
+
+C_BLOB($requestData;$responseData;$responseDataBuffer)
+
+ON ERR CALL("ICU_ERR")
+CONVERT FROM TEXT($message;$encoding;$requestData)
+ON ERR CALL("")
+
+C_LONGINT($tcpState)
+
+If (OK=1)
+  $error:=TCP_SendBLOB ($tcpId;$requestData)
+
+  If (TCP_Result ($1;$error))
+
+    $start:=Milliseconds
+
+    Repeat 
+
+      DELAY PROCESS(Current process;12)
+
+      $error:=TCP_ReceiveBLOB ($tcpId;$responseDataBuffer)
+      $error:=TCP_State ($tcpId;$tcpState)
+
+      COPY BLOB($responseDataBuffer;$responseData;0;BLOB size($responseData);BLOB size($responseDataBuffer))
+      CLEAR VARIABLE($responseDataBuffer)
+
+      $timeoutReached:=(Milliseconds-$start)>$timeout
+
+    Until (($error#0) | ($tcpState=0) | ($timeoutReached))
+
+    If ($timeoutReached)
+
+      $0:=TCP_Failure ($1;-1;"timeout reached!")
+
+    Else 
+
+      $encoding:=OB Get($request;"oe")
+
+      ON ERR CALL("ICU_ERR")
+      OB SET($1;"response";Convert to text($responseData;$encoding))
+      ON ERR CALL("")
+
+      If (OK=1)
+        $0:=TCP_Result ($1;$error)
+      Else 
+        $0:=TCP_Failure ($1;ERROR;ERROR TEXT)
+      End if 
+
+    End if 
+
+  End if 
+
+Else 
+  $0:=TCP_Failure ($1;ERROR;ERROR TEXT)
+End if 
+```
 
 TCP/IPサーバー
 ---
