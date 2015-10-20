@@ -200,21 +200,108 @@ Else
 End if 
 ```
 
+送信データは，```TCP_SendBLOB```でまとめて処理することができます。この例では，もとのデータがテキスト（CSV）なので```CONVERT FROM TEXT```でこれをBLOBに変換しています。文字コードの変換は，エンコーディングがサポートしていない文字が渡された場合など，失敗する可能性があるので，```ON ERROR CALL```も使用しています。
 
+**注記**
 
+``TCP_Send``は，Unicodeモード以前からの遺産なので，通常は使用しません。
 
+サーバーからの返信は，時間をかけて受信する必要があります。具体的にはバッファBLOBを用意し，エラーが返されるか，TCP接続が失われるまで，```TCP_ReceiveBLOB```を繰り返しコールします。加えてタイムアウトも設定すると良いでしょう。BLOBの連結には```COPY BLOB```を使用します。コールの間隔を空けるために```DELAY PROCESS```をループ内に記述してください。
+
+最後に```TCP_Close```で接続を閉じて完了です。
+
+``TCP_Disconnect``は，オブジェクト型のパラメーターを受け渡しするラッパーメソッドです。 
+
+```
+C_OBJECT($1)
+C_BOOLEAN($0)
+
+$tcpId:=OB Get($1;"id";Is longint)
+
+$error:=TCP_Close ($tcpId)
+
+$0:=TCP_Result ($1;$error)
+```
 
 TCP/IPサーバー
 ---
 
-
-
-
+TCPクライアントのプログラムは，サーバーが応答しなければ動きません。動作を確認するために，4D Internet Commandsのローレベルコマンドで簡易的なTCPサーバーを作成すると便利です。
 
 **注記**
 
 4D Internet Commandsは，極めて簡易な受信コマンドしか提供していません。その非力なコマンド群でサーバーソフトウェアを構築することには，明らかに無理があります。同時に数件のリクエストを処理しただけでパケットロスが発生したり，過剰にリソースを消費することになりかねません。**サーバーソフトウェア**を構築するのであれば，無料の簡易ソフトである4D Internet Commandsではなく，ずっと高機能で本格的な[NTK](https://www.pluggers.nl/product/ntk-plugin/)プラグインの使用を検討してください。
 
+```
+//TCP_SERVER
+
+C_OBJECT($1)
+C_LONGINT($2)
+
+$params:=Count parameters
+
+Case of 
+ : ($params=1)
+
+  HIDE PROCESS(New process(Current method name;0;"$TCP_LISTEN";$1;Current process;*))
+
+ : ($params=2)
+
+  $port:=OB Get($1;"port";Is longint)
+  $timeout:=OB Get($1;"timeout";Is longint)
+  $hostName:=""
+  $portNumberLocal:=0x0000
+
+  C_LONGINT($tcpId;$tcpState)
+
+  $error:=TCP_Listen ($hostName;$portNumberLocal;$port;$timeout;$tcpId)
+
+  If ($error=0)
+
+    $error:=TCP_State ($tcpId;$tcpState)
+
+    If ($tcpState=8)
+
+      C_BLOB($requestData;$requestDataBuffer;$responseData)
+      C_TEXT($message)
+
+      Repeat 
+
+        $error:=TCP_ReceiveBLOB ($tcpId;$requestDataBuffer)
+        $error:=TCP_State ($tcpId;$tcpState)
+
+        COPY BLOB($requestDataBuffer;$requestData;0;BLOB size($requestData);BLOB size($requestDataBuffer))
+        CLEAR VARIABLE($requestDataBuffer)
+
+        $lastBytePosition:=BLOB size($requestData)-1
+        $completeMessage:=$requestData{$lastBytePosition}=0x0000
+
+        If ($completeMessage)
+          DELETE FROM BLOB($requestData;$lastBytePosition;1)
+          ON ERR CALL("ICU_ERR")
+          $message:=Convert to text($requestData;"utf-8")
+          ON ERR CALL("")
+        End if 
+
+      Until ($error#0) | ($tcpState=0) | ($completeMessage)
+
+      C_OBJECT($response)
+      OB SET($response;"receivedFullRequest";$completeMessage)
+      OB SET($response;"message";$message)
+      CONVERT FROM TEXT(JSON Stringify($response);"utf-8";$responseData)
+
+      $error:=TCP_SendBLOB ($tcpId;$responseData)
+
+    End if 
+
+    $error:=TCP_Close ($tcpId)
+
+  End if 
+
+End case 
+```
+
+``TCP_Listen``は，制御が返されるまでプロセスをブロックするので，新規プロセスで使用します。その後，クライアント側のときと同じように``TCP_ReceiveBLOB``を繰り返しコールします。この例題では，単純に受信したメッセージ（末端の```0x00```を除く）をそのまま返しています。ここでもオブジェクト型（```JSON Stringify```）が使用されていることに注目してください。JSON形式のオブジェジェクト型は軽量で可読性が高く，構造を容易に拡張することができるので非常に便利です。
 
 **例題**
 
