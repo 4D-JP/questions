@@ -93,6 +93,30 @@ ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))
 
 ```Attr```は，ドット記法を処理するための簡易的なメソッドです。v15の時点で，オブジェクト型（JSON）のドット記法に対応しているのは，[QUERY BY ATTRIBUTE ](http://doc.4d.com/4Dv15/4D/15/QUERY-BY-ATTRIBUTE.301-2005959.ja.html)だけなので，通常は[OB Get](http://doc.4d.com/4Dv15/4D/15/OB-Get.301-2007253.ja.html)を多重にコールする必要があります。
 
+```
+//Attr
+
+C_OBJECT($1)
+C_TEXT($2)
+C_TEXT($0)
+
+$i:=0x0001
+ARRAY LONGINT($pos;0)
+ARRAY LONGINT($len;0)
+
+$object:=$1
+
+While (Match regex("([^.]+)";$2;$i;$pos;$len))
+  $propertyName:=Substring($2;$pos{1};$len{1})
+  If (OB Get type($object;$propertyName)=Is object)
+    $object:=OB Get($1;$propertyName)
+  Else 
+    $0:=OB Get($object;$propertyName;Is text)
+  End if 
+  $i:=$pos{1}+$len{1}
+End while 
+```
+
 接続に成功したならば，すぐにデータを送信することができます。クライアントとサーバーの間で交わされるメッセージには，通常，データの終わりを示すための方法がプロトコルで定められているはずです。この例では，単純に```0x00```がデータの終わりであるものとしています。
 
 ```
@@ -175,6 +199,10 @@ Else
   $0:=TCP_Failure ($1;ERROR;ERROR TEXT)
 End if 
 ```
+
+
+
+
 
 TCP/IPサーバー
 ---
