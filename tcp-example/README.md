@@ -1,5 +1,5 @@
 
-4D Internet Commandsで実装することができます。
+[4D Internet Commands](http://doc.4d.com/4Dv15/4D-Internet-Commands/15/4D-Internet-Commands.100-2397788.ja.html)で実装することができます。
 
 ---
 
