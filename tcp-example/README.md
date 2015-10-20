@@ -36,6 +36,43 @@ ASSERT(TCP_Disconnect ($params);Attr ($params;"error.message"))  //disconnect
 TCP/IPクライアント
 ---
 
+クライアント側は，はじめにサーバーとのソケット接続を確立する必要があります。これには，```TCP_Open```を使用します。コマンドには，下記のパラメーターを渡します。
+
+* ホスト名またはアドレス（テキスト）
+* ポート番号（数値）
+* SSL使用の是非（ブール）
+
+``TCP_Connect``は，オブジェクト型のパラメーターを受け渡しするラッパーメソッドです。 
+
+```
+C_OBJECT($1)
+C_BOOLEAN($0)
+
+C_BOOLEAN($isSSL)
+
+$address:=OB Get($1;"address";Is text)
+$port:=OB Get($1;"port";Is longint)
+$isSSL:=OB Get($1;"isSSL";Is Boolean)
+
+C_LONGINT($tcpId)
+
+If ($isSSL)
+$error:=TCP_Open ($address;$port;$tcpId;2)
+Else 
+$error:=TCP_Open ($address;$port;$tcpId;0)
+End if 
+
+OB SET($1;"id";$tcpId)
+
+$0:=TCP_Result ($1;$error)
+```
+
+**注記**
+
+v14で新設されたオブジェクト型を使用すれば，数やタイプが特定されない任意の引数をメソッドに渡すことができます。オブジェクト型の引数は，実際には参照型なので，ポインター型を使用しなくても，直接，プロパティに値を代入することができます。
+
+**参考**: [```TCP_Connect```](http://www.4d.com/jp/blog/c-object.html)
+
 TCP/IPサーバー
 ---
 
