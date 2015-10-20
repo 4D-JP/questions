@@ -57,9 +57,9 @@ $isSSL:=OB Get($1;"isSSL";Is Boolean)
 C_LONGINT($tcpId)
 
 If ($isSSL)
-$error:=TCP_Open ($address;$port;$tcpId;2)
+  $error:=TCP_Open ($address;$port;$tcpId;2)
 Else 
-$error:=TCP_Open ($address;$port;$tcpId;0)
+  $error:=TCP_Open ($address;$port;$tcpId;0)
 End if 
 
 OB SET($1;"id";$tcpId)
@@ -71,10 +71,25 @@ $0:=TCP_Result ($1;$error)
 
 v14で新設されたオブジェクト型を使用すれば，数やタイプが特定されない任意の引数をメソッドに渡すことができます。オブジェクト型の引数は，実際には参照型なので，ポインター型を使用しなくても，直接，プロパティに値を代入することができます。
 
-**参考**: [```TCP_Connect```](http://www.4d.com/jp/blog/c-object.html)
+**参考**: [```オブジェクト型を理解する```](http://www.4d.com/jp/blog/c-object.html)
+
+ネットワークが利用できない，サーバーが応答しないなど，接続が失敗した場合には，```False```が返されます。その場合，引数の```error.code```プロパティにはエラーコード，```error.message```にはエラーメッセージが代入されています（```TCP_Result```メソッド）。開発中は，[ASSERT](http://doc.4d.com/4Dv15/4D/15/ASSERT.301-2007074.ja.html)でこれを検知することができます。
+
+```
+ASSERT(TCP_Connect ($params);Attr ($params;"error.message"))
+```
+
+```Attr```は，ドット記法を処理するための簡易的なメソッドです。v15の時点で，オブジェクト型（JSON）のドット記法に対応しているのは，[QUERY BY ATTRIBUTE ](http://doc.4d.com/4Dv15/4D/15/QUERY-BY-ATTRIBUTE.301-2005959.ja.html)だけなので，通常は[OB Get](http://doc.4d.com/4Dv15/4D/15/OB-Get.301-2007253.ja.html)を多重にコールする必要があります。
+
+
+
+
 
 TCP/IPサーバー
 ---
+
+
+
 
 
 **注記**
