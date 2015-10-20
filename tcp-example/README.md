@@ -31,10 +31,18 @@ ASSERT(TCP_Disconnect ($params);Attr ($params;"error.message"))  //disconnect
 
 **注記**
 
-4D Internet CommandsのTCPコマンドは，SSL通信をサポート（4D本体のOpenSSLライブラリを使用）していますが，クライアント証明書には対応していません。証明書を使用するのであれば，無料の簡易ソフトである4D Internet Commandsではなく，ずっと高機能で本格的な[NTK](https://www.pluggers.nl/product/ntk-plugin/)プラグインの使用を検討してください。
+4D Internet CommandsのTCPコマンドは，SSL通信をサポート（4D本体のOpenSSLライブラリを使用）していますが，クライアント証明書には対応していません。**証明書**を使用するのであれば，無料の簡易ソフトである4D Internet Commandsではなく，ずっと高機能で本格的な[NTK](https://www.pluggers.nl/product/ntk-plugin/)プラグインの使用を検討してください。
 
 TCP/IPクライアント
 ---
+
+TCP/IPサーバー
+---
+
+
+**注記**
+
+4D Internet Commandsは，極めて簡易な受信コマンドしか提供していません。その非力なコマンド群でサーバーソフトウェアを構築することには，明らかに無理があります。同時に数件のリクエストを処理しただけでパケットロスが発生したり，過剰にリソースを消費することになりかねません。**サーバーソフトウェア**を構築するのであれば，無料の簡易ソフトである4D Internet Commandsではなく，ずっと高機能で本格的な[NTK](https://www.pluggers.nl/product/ntk-plugin/)プラグインの使用を検討してください。
 
 
 **例題**
