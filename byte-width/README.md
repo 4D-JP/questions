@@ -1,4 +1,4 @@
-![](screenshot.png)
+![](https://github.com/4D-JP/questions/blob/master/screenshot.png)
 
 [Match regex](http://doc.4d.com/4Dv15/4D/15/Match-regex.301-2006648.ja.html)と正規表現で処理することができます。
 
