@@ -73,3 +73,5 @@ End case
 ### まとめ
 
 4D Write（32ビット/プラグイン版）でテキストの背後に画像をペーストするためには，ペーストボードに画像だけがコピーされている状態でペーストを実行することが必要です。ペーストボードに画像以外のデータが含まれているケースに対応するためには，まず，``WR ON COMMAND``でペースト操作をインターセプトするためのメソッドを登録しておき，ペーストボードの内容を「フィルター」してから``WR EXECUTE COMMAND``でペースト処理が実行されるような仕掛けを用意することができます。
+
+「サンプル（v15）](https://github.com/4D-JP/questions/blob/master/write-area-paste-image/4d-write-paste-background-image.4dbase.zip)
