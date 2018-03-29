@@ -12,4 +12,4 @@
 
 * [4D Write（32ビット/プラグイン版）でテキストの背後に画像をペーストするにはどうすれば良いでしょうか](https://github.com/4D-JP/questions/tree/master/write-area-paste-image)
 
-* [クライアントキャッシュを毎回クリアすることはできないのでしょうか?](https://github.com/4D-JP/questions/tree/master/clear-client_cache)
+* [クライアントキャッシュを毎回クリアすることはできないのでしょうか?](https://github.com/4D-JP/questions/tree/master/clear-client-cache)
