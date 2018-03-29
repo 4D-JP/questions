@@ -32,7 +32,7 @@ http://www.gnu.org/software/src-highlite -->
     open_login_dialog     : true = ログイン画面を開く  
   
     open_in_custom_mode    : アプリケーションモードで開始
-    open_tools             :MSCを開く
+    open_tools             : MSCを開く
     create_structure_file  : 新規ストラクチャファイルを作成
     structure_file         : ストラクチャファイルパス
     create_data_file       : 新規データファイルを作成
